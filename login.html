@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Digital Life Academy</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body class="auth-body">
+    <div class="auth-scene">
+        <div class="auth-card">
+            <div class="auth-badge">❤</div>
+            <div class="auth-header">
+                <h1>Welcome Back</h1>
+                <p>Login to continue your journey</p>
+            </div>
+
+            <div class="auth-avatar-wrap">
+                <div class="auth-avatar">
+                    <span>😊</span>
+                </div>
+            </div>
+
+            <form id="loginForm" class="auth-form">
+                <div class="field-wrap">
+                    <span class="field-icon">✉</span>
+                    <input id="loginEmail" type="email" placeholder="Email or Username" required />
+                </div>
+
+                <div class="field-wrap">
+                    <span class="field-icon">🔒</span>
+                    <input id="loginPassword" type="password" placeholder="Password" required />
+                    <span class="field-eye">◉</span>
+                </div>
+
+                <div class="auth-meta">
+                    <a href="#">Forgot Password?</a>
+                </div>
+
+                <button type="submit" class="auth-btn primary">Login</button>
+            </form>
+
+            <div class="auth-divider"><span>or continue with</span></div>
+
+            <div class="social-row">
+                <button type="button" class="social-btn google">G</button>
+                <button type="button" class="social-btn apple"></button>
+                <button type="button" class="social-btn facebook">f</button>
+            </div>
+
+            <p class="auth-switch">
+                Don't have an account? <a href="register.html">Sign Up</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const defaultAdmin = {
+            id: 'admin-1',
+            fullName: 'System Administrator',
+            username: 'admin',
+            email: 'ujikacaesar@gmail.com',
+            password: '5699',
+            role: 'admin'
+        };
+
+        const savedUsers = JSON.parse(localStorage.getItem('digitalAcademyUsers') || '[]');
+        if (!savedUsers.some((user) => user.email === defaultAdmin.email)) {
+            savedUsers.push(defaultAdmin);
+            localStorage.setItem('digitalAcademyUsers', JSON.stringify(savedUsers));
+        }
+
+        const loginForm = document.getElementById('loginForm');
+        const loginEmail = document.getElementById('loginEmail');
+        const loginPassword = document.getElementById('loginPassword');
+
+        const demoUsers = JSON.parse(localStorage.getItem('digitalAcademyUsers') || '[]');
+
+        loginForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const email = loginEmail.value.trim();
+            const password = loginPassword.value.trim();
+
+            if (!email || !password) {
+                alert('Please enter both email and password.');
+                return;
+            }
+
+            const matchedUser = demoUsers.find((user) => {
+                const emailMatches = user.email.toLowerCase() === email.toLowerCase();
+                const usernameMatches = user.username.toLowerCase() === email.toLowerCase();
+                return (emailMatches || usernameMatches) && user.password === password;
+            });
+
+            if (!matchedUser) {
+                alert('No matching account found. Please register first or check your login details.');
+                return;
+            }
+
+            const session = {
+                email: matchedUser.email,
+                username: matchedUser.username,
+                role: matchedUser.role || 'user',
+                needsPasswordChange: matchedUser.email === 'ujikacaesar@gmail.com' && matchedUser.password === '5699'
+            };
+
+            localStorage.setItem('digitalAcademySession', JSON.stringify(session));
+
+            if (session.needsPasswordChange) {
+                const newPassword = window.prompt('Default admin password detected. Please create a new password before continuing:', '');
+                if (!newPassword || newPassword.trim().length < 4) {
+                    alert('A new password is required before the admin account can continue.');
+                    return;
+                }
+
+                const updatedUsers = JSON.parse(localStorage.getItem('digitalAcademyUsers') || '[]');
+                const targetUser = updatedUsers.find((user) => user.email === 'ujikacaesar@gmail.com');
+                if (targetUser) {
+                    targetUser.password = newPassword.trim();
+                    localStorage.setItem('digitalAcademyUsers', JSON.stringify(updatedUsers));
+                }
+
+                localStorage.setItem('digitalAcademySession', JSON.stringify({
+                    email: matchedUser.email,
+                    username: matchedUser.username,
+                    role: matchedUser.role || 'user',
+                    needsPasswordChange: false
+                }));
+
+                alert('Password updated successfully. Welcome back.');
+            }
+
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>

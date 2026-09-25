@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register | Digital Life Academy</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body class="auth-body">
+    <div class="auth-scene">
+        <div class="auth-card auth-card--register">
+            <div class="auth-badge">❤</div>
+            <div class="auth-header">
+                <h1>Join the Academy</h1>
+                <p>Create your account and begin your learning journey</p>
+            </div>
+
+            <div class="auth-avatar-wrap">
+                <div class="auth-avatar auth-avatar--register">
+                    <span>🌱</span>
+                </div>
+            </div>
+
+            <form id="registerForm" class="auth-form">
+                <div class="field-wrap">
+                    <span class="field-icon">👤</span>
+                    <input id="registerName" type="text" placeholder="Full Name" required />
+                </div>
+
+                <div class="field-wrap">
+                    <span class="field-icon">✉</span>
+                    <input id="registerEmail" type="email" placeholder="Email Address" required />
+                </div>
+
+                <div class="field-wrap">
+                    <span class="field-icon">🔒</span>
+                    <input id="registerPassword" type="password" placeholder="Password" required />
+                    <span class="field-eye">◉</span>
+                </div>
+
+                <button type="submit" class="auth-btn primary">Create Account</button>
+            </form>
+
+            <p class="auth-switch">
+                Already have an account? <a href="login.html">Login</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        const registerForm = document.getElementById('registerForm');
+        const registerName = document.getElementById('registerName');
+        const registerEmail = document.getElementById('registerEmail');
+        const registerPassword = document.getElementById('registerPassword');
+
+        registerForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const name = registerName.value.trim();
+            const email = registerEmail.value.trim();
+            const password = registerPassword.value.trim();
+
+            if (!name || !email || !password) {
+                alert('Please complete all fields.');
+                return;
+            }
+
+            const existingUsers = JSON.parse(localStorage.getItem('digitalAcademyUsers') || '[]');
+
+            const alreadyExists = existingUsers.some((user) => user.email.toLowerCase() === email.toLowerCase());
+            if (alreadyExists) {
+                alert('An account with this email already exists. Please login instead.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const newUser = {
+                id: Date.now(),
+                fullName: name,
+                username: name.split(' ')[0],
+                email,
+                password,
+                role: 'user'
+            };
+
+            existingUsers.push(newUser);
+            localStorage.setItem('digitalAcademyUsers', JSON.stringify(existingUsers));
+
+            alert('Registration successful. Please log in to continue.');
+            window.location.href = 'login.html';
+        });
+    </script>
+</body>
+</html>

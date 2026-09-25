@@ -768,7 +768,158 @@ function updatePersonalDashboard() {
     if (learnerNameInput) learnerNameInput.value = name;
 }
 
+function getCurrentUserRole() {
+    const session = JSON.parse(localStorage.getItem("digitalAcademySession") || "null");
+    return session && session.role === "admin" ? "admin" : "user";
+}
+
+function renderRoleBasedDashboard() {
+    const role = getCurrentUserRole();
+    const userSection = document.getElementById("progress");
+    const adminSection = document.getElementById("adminOverview");
+
+    if (userSection) {
+        userSection.classList.toggle("hidden", role === "admin");
+    }
+
+    if (adminSection) {
+        adminSection.classList.toggle("hidden", role !== "admin");
+    }
+
+    if (role === "admin") {
+        renderAdminAnalytics();
+    }
+}
+
+function renderAdminAnalytics() {
+    const summary = document.getElementById("adminSummary");
+    const panel = document.getElementById("adminAnalyticsPanel");
+    const grid = document.getElementById("adminAnalyticsGrid");
+
+    if (!summary || !panel || !grid) return;
+
+    const analytics = loadAnalyticsState();
+    const totalUsers = JSON.parse(localStorage.getItem("digitalAcademyUsers") || "[]").length;
+    const lessonViews = Object.values(analytics.lessonViews).reduce((sum, count) => sum + count, 0);
+    const averageQuiz = analytics.totalQuizCompletions
+        ? Math.round((analytics.quizResults.passed || 0) / analytics.totalQuizCompletions * 100)
+        : 0;
+
+    summary.innerHTML = `
+        <div class="admin-summary-card">
+            <span>Total users</span>
+            <strong>${totalUsers}</strong>
+        </div>
+        <div class="admin-summary-card">
+            <span>Lesson views</span>
+            <strong>${lessonViews}</strong>
+        </div>
+        <div class="admin-summary-card">
+            <span>Quiz pass rate</span>
+            <strong>${averageQuiz}%</strong>
+        </div>
+        <div class="admin-summary-card">
+            <span>Sessions</span>
+            <strong>${analytics.totalSessions}</strong>
+        </div>
+    `;
+
+    panel.innerHTML = `
+        <div class="analytics-card">
+            <span>Visitors</span>
+            <strong>${analytics.totalVisitors}</strong>
+        </div>
+        <div class="analytics-card">
+            <span>Returning users</span>
+            <strong>${analytics.returningUsers}</strong>
+        </div>
+        <div class="analytics-card">
+            <span>Quiz completions</span>
+            <strong>${analytics.totalQuizCompletions}</strong>
+        </div>
+        <div class="analytics-card">
+            <span>Popular feature</span>
+            <strong>${Object.entries(analytics.featureUsage).sort((a, b) => b[1] - a[1])[0] ? Object.entries(analytics.featureUsage).sort((a, b) => b[1] - a[1])[0][0].replace(/_/g, " ") : "No data yet"}</strong>
+        </div>
+    `;
+
+    const topLessons = Object.entries(analytics.lessonViews)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([courseId, count]) => {
+            const course = courses.find(item => item.id === courseId);
+            return `${course ? course.title : courseId} (${count})`;
+        });
+
+    const topFeatures = Object.entries(analytics.featureUsage)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4)
+        .map(([name, count]) => `${name.replace(/_/g, " ")} (${count})`);
+
+    grid.innerHTML = `
+        <div class="analytics-card">
+            <span>Popular lessons</span>
+            <strong>${topLessons.length ? topLessons.join("<br>") : "No lesson views yet"}</strong>
+        </div>
+        <div class="analytics-card">
+            <span>Device mix</span>
+            <strong>Desktop ${analytics.deviceTypes.desktop}<br>Mobile ${analytics.deviceTypes.mobile}<br>Tablet ${analytics.deviceTypes.tablet}</strong>
+        </div>
+        <div class="analytics-card">
+            <span>Quiz outcomes</span>
+            <strong>Passed ${analytics.quizResults.passed || 0}<br>Failed ${analytics.quizResults.failed || 0}</strong>
+        </div>
+        <div class="analytics-card">
+            <span>Most-used features</span>
+            <strong>${topFeatures.length ? topFeatures.join("<br>") : "No data yet"}</strong>
+        </div>
+    `;
+}
+
+function updateUserMenu() {
+    const session = JSON.parse(localStorage.getItem("digitalAcademySession") || "null");
+    const toggle = document.getElementById("userMenuToggle");
+    const nameEl = document.getElementById("userMenuName");
+    const headerEl = document.getElementById("userMenuHeader");
+    const roleEl = document.getElementById("userMenuRole");
+    const avatarEl = document.getElementById("userAvatar");
+    const statusEl = document.getElementById("userMenuStatus");
+    const statusPill = document.getElementById("userStatusPill");
+
+    if (!toggle || !nameEl || !headerEl || !roleEl || !avatarEl) return;
+
+    const userName = (session && session.username) ? session.username : "Learner";
+    const role = (session && session.role === "admin") ? "Admin" : "Member";
+    const onlineStatus = role === "Admin" ? "Admin" : "Online";
+
+    nameEl.textContent = userName;
+    headerEl.textContent = userName;
+    roleEl.textContent = role;
+    avatarEl.textContent = userName.charAt(0).toUpperCase();
+
+    if (statusEl) statusEl.textContent = onlineStatus;
+    if (statusPill) statusPill.textContent = onlineStatus;
+
+    if (onlineStatus === "Admin") {
+        statusEl.style.color = "#7c3aed";
+        statusPill.style.background = "rgba(124, 58, 237, 0.12)";
+        statusPill.style.color = "#6d28d9";
+    } else {
+        statusEl.style.color = "#16a34a";
+        statusPill.style.background = "rgba(22, 163, 74, 0.12)";
+        statusPill.style.color = "#15803d";
+    }
+}
+
 function updateDashboard() {
+
+    const role = getCurrentUserRole();
+    updateUserMenu();
+
+    if (role === "admin") {
+        renderRoleBasedDashboard();
+        return;
+    }
 
     document.getElementById("points").textContent =
         state.points;
@@ -795,6 +946,7 @@ function updateDashboard() {
 
     updatePersonalDashboard();
     updateBadges();
+    renderRoleBasedDashboard();
 
 }
 
@@ -1702,6 +1854,33 @@ document
 
     });
 
+const userMenuToggle = document.getElementById("userMenuToggle");
+const userMenuDropdown = document.getElementById("userMenuDropdown");
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (userMenuToggle && userMenuDropdown) {
+    userMenuToggle.addEventListener("click", () => {
+        const isExpanded = userMenuToggle.getAttribute("aria-expanded") === "true";
+        userMenuToggle.setAttribute("aria-expanded", String(!isExpanded));
+        userMenuDropdown.classList.toggle("hidden", isExpanded);
+    });
+
+    document.addEventListener("click", (event) => {
+        const target = event.target;
+        if (!target.closest(".user-menu")) {
+            userMenuDropdown.classList.add("hidden");
+            userMenuToggle.setAttribute("aria-expanded", "false");
+        }
+    });
+}
+
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+        localStorage.removeItem("digitalAcademySession");
+        window.location.href = "login.html";
+    });
+}
+
 const installBtn = document.getElementById("installBtn");
 let deferredPrompt = null;
 
@@ -1818,6 +1997,7 @@ document
 
 trackVisit();
 updateAnalyticsPanel();
+renderRoleBasedDashboard();
 
 displayCourses();
 

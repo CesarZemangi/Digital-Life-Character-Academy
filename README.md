@@ -18,6 +18,29 @@ A browser-based learning app focused on digital literacy, online safety, digital
 - Personalized dashboard with points, streaks, and progress tracking
 - Content creation, digital safety, office skills, and wellbeing modules
 - Responsive, single-page interface built with HTML, CSS, and JavaScript
+- Google-based learner sign-in model with Supabase database storage
+- Admin account for platform management and oversight
+
+## Authentication and admin setup
+
+This application is designed around a simple public-platform auth model:
+
+- Learner accounts use Google sign-in.
+- No GitHub sign-in is required for users.
+- All important platform data is stored in Supabase rather than only in browser local storage.
+- Administrator account:
+  - Email: `ujikacaesar@gmail.com`
+  - Default password: `5699`
+  - The admin must change the password immediately after the first login before system access continues.
+
+## Supabase integration plan
+
+A production implementation should use:
+
+- Supabase Auth for Google login and admin session management
+- PostgreSQL tables for user profiles, lesson progress, achievements, certificates, and admin actions
+- Row Level Security (RLS) to protect learner and admin data
+- A backend or Supabase Edge Function layer for protected writes and analytics
 
 ## How it works
 
