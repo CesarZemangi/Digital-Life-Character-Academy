@@ -1,6 +1,7 @@
 # Digital Life & Character Academy
 
 [![Live Demo](https://img.shields.io/badge/Live-Demo-4f46e5?style=for-the-badge)](https://cesarzemangi.github.io/Digital-Life-Character-Academy/)
+[![Netlify Status](https://api.netlify.com/api/v1/badges/02049123-5dbb-47e9-bbeb-2e992aad1749/deploy-status)](https://app.netlify.com/projects/digitital-life-character-academic/deploys)
 
 A browser-based learning app focused on digital literacy, online safety, digital citizenship, office productivity, and personal growth. Learners can explore lessons by category, complete lesson-specific quizzes, track progress, and unlock completion based on quiz performance.
 
