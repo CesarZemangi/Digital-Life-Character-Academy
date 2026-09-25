@@ -15,6 +15,21 @@
     <link rel="manifest" href="manifest.json">
     <link rel="apple-touch-icon" href="digital.png">
     <link rel="stylesheet" href="style.css">
+    <script>
+        (function () {
+            const isAuthPage = /\/(login|register)\.html$/i.test(window.location.pathname);
+            if (isAuthPage) return;
+
+            try {
+                const session = localStorage.getItem('digitalAcademySession');
+                if (!session) {
+                    window.location.replace('login.html');
+                }
+            } catch (error) {
+                window.location.replace('login.html');
+            }
+        })();
+    </script>
 </head>
 
 <body>

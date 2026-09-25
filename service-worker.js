@@ -2,8 +2,10 @@ const CACHE_NAME = 'digital-academy-v1';
 const ASSETS = [
   './',
   './index.html',
+  './login.html',
   './style.css',
   './app.js',
+  './supabase-config.js',
   './digital.png',
   './manifest.json'
 ];
