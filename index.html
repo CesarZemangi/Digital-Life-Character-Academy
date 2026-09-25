@@ -4,15 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#2563eb">
-    <meta name="description" content="Digital Life & Character Academy helps learners build character, digital safety, and creative skills.">
+    <meta name="description" content="Digital Life Academy helps learners build character, digital safety, and creative skills.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Digital Life Academy">
+    <meta name="format-detection" content="telephone=no">
 
-    <title>Digital Life & Character Academy</title>
+    <title>Digital Life Academy</title>
 
     <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="digital.png">
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
+
+<div id="offlineBanner" class="offline-banner hidden" aria-live="polite">
+    You are offline. Cached lessons are still available.
+</div>
 
 <header>
     <nav class="navbar">
@@ -31,7 +40,10 @@
             <a href="#progress">Progress</a>
         </div>
 
-        <button id="themeBtn" class="theme-btn">🌙</button>
+        <div class="nav-actions">
+            <button id="installBtn" class="btn primary install-btn hidden">Install App</button>
+            <button id="themeBtn" class="theme-btn">🌙</button>
+        </div>
     </nav>
 </header>
 
@@ -74,6 +86,8 @@
     <section id="progress" class="section">
 
         <h2>Your Learning Dashboard</h2>
+
+        <div id="analyticsPanel" class="analytics-panel"></div>
 
         <div class="dashboard">
 
@@ -285,6 +299,11 @@
     <section id="certificates" class="section">
         <h2>Certificates & Achievements</h2>
         <div id="certificateList" class="certificate-list"></div>
+    </section>
+
+    <section class="section">
+        <h2>Platform Analytics</h2>
+        <div id="learningAnalytics" class="analytics-grid"></div>
     </section>
 
     <!-- BADGES -->

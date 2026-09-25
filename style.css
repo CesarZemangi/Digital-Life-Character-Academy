@@ -72,6 +72,18 @@ header {
     font-weight: 600;
 }
 
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.install-btn {
+    padding: 10px 14px;
+    font-size: 13px;
+    min-width: 0;
+}
+
 .theme-btn,
 .menu-btn {
     border: none;
@@ -988,6 +1000,52 @@ header {
     min-width: 120px;
 }
 
+.offline-banner {
+    position: sticky;
+    top: 0;
+    z-index: 1500;
+    background: #f59e0b;
+    color: #1f2937;
+    padding: 10px 16px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.analytics-panel {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    margin: 20px 0 30px;
+}
+
+.analytics-card {
+    background: white;
+    border-radius: 16px;
+    padding: 18px 20px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+}
+
+.dark .analytics-card {
+    background: #181e2b;
+}
+
+.analytics-card strong {
+    display: block;
+    font-size: 1.8rem;
+    margin-top: 8px;
+}
+
+.analytics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.analytics-grid .analytics-card {
+    min-height: 120px;
+}
+
 /* UTILITIES */
 
 .hidden {
@@ -1041,6 +1099,10 @@ footer {
 
 @media (max-width: 800px) {
 
+    .analytics-panel {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .dashboard {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -1085,8 +1147,21 @@ footer {
 
 @media (max-width: 500px) {
 
+    .analytics-panel {
+        grid-template-columns: 1fr;
+    }
+
     .dashboard {
         grid-template-columns: 1fr;
+    }
+
+    .nav-actions {
+        gap: 8px;
+    }
+
+    .install-btn {
+        padding: 8px 10px;
+        font-size: 11px;
     }
 
     .hero h1 {

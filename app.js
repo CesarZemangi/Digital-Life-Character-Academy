@@ -263,6 +263,153 @@ const courses = Object.entries(categoryLessonBlueprints).flatMap(([category, les
     }))
 );
 
+const ANALYTICS_KEY = "digitalAcademyAnalytics";
+const ANALYTICS_CLIENT_KEY = "digitalAcademyClient";
+
+function getDeviceType() {
+    const ua = navigator.userAgent || "";
+    if (/iPad|Tablet|PlayBook|Silk/i.test(ua)) return "tablet";
+    if (/Mobile|Android|iPhone|iPod|Windows Phone/i.test(ua)) return "mobile";
+    return "desktop";
+}
+
+function getDefaultAnalyticsState() {
+    return {
+        totalVisitors: 0,
+        returningUsers: 0,
+        totalQuizCompletions: 0,
+        totalLessonViews: 0,
+        totalSessions: 0,
+        lastVisit: null,
+        deviceTypes: { desktop: 0, mobile: 0, tablet: 0 },
+        featureUsage: {},
+        lessonViews: {},
+        quizResults: { passed: 0, failed: 0 }
+    };
+}
+
+function loadAnalyticsState() {
+    try {
+        const raw = JSON.parse(localStorage.getItem(ANALYTICS_KEY) || "null");
+        const defaults = getDefaultAnalyticsState();
+        if (!raw) return defaults;
+
+        return {
+            ...defaults,
+            ...raw,
+            deviceTypes: { ...defaults.deviceTypes, ...(raw.deviceTypes || {}) },
+            featureUsage: raw.featureUsage || {},
+            lessonViews: raw.lessonViews || {},
+            quizResults: { ...defaults.quizResults, ...(raw.quizResults || {}) }
+        };
+    } catch (error) {
+        return getDefaultAnalyticsState();
+    }
+}
+
+function saveAnalyticsState(data) {
+    localStorage.setItem(ANALYTICS_KEY, JSON.stringify(data));
+}
+
+function trackVisit() {
+    const analytics = loadAnalyticsState();
+    const hasClientId = Boolean(localStorage.getItem(ANALYTICS_CLIENT_KEY));
+    const deviceType = getDeviceType();
+
+    analytics.deviceTypes[deviceType] = (analytics.deviceTypes[deviceType] || 0) + 1;
+    analytics.totalSessions = (analytics.totalSessions || 0) + 1;
+    analytics.lastVisit = new Date().toISOString();
+
+    if (!hasClientId) {
+        analytics.totalVisitors = (analytics.totalVisitors || 0) + 1;
+        localStorage.setItem(ANALYTICS_CLIENT_KEY, "anon");
+    } else {
+        analytics.returningUsers = (analytics.returningUsers || 0) + 1;
+    }
+
+    saveAnalyticsState(analytics);
+}
+
+function trackFeatureUsage(featureName) {
+    const analytics = loadAnalyticsState();
+    analytics.featureUsage[featureName] = (analytics.featureUsage[featureName] || 0) + 1;
+    saveAnalyticsState(analytics);
+    updateAnalyticsPanel();
+}
+
+function trackLessonView(courseId) {
+    const analytics = loadAnalyticsState();
+    analytics.lessonViews[courseId] = (analytics.lessonViews[courseId] || 0) + 1;
+    analytics.totalLessonViews = (analytics.totalLessonViews || 0) + 1;
+    saveAnalyticsState(analytics);
+    updateAnalyticsPanel();
+}
+
+function trackQuizCompletion(score, passed) {
+    const analytics = loadAnalyticsState();
+    analytics.totalQuizCompletions = (analytics.totalQuizCompletions || 0) + 1;
+    analytics.quizResults[passed ? "passed" : "failed"] = (analytics.quizResults[passed ? "passed" : "failed"] || 0) + 1;
+    saveAnalyticsState(analytics);
+    updateAnalyticsPanel();
+}
+
+function updateAnalyticsPanel() {
+    const panel = document.getElementById("analyticsPanel");
+    const analyticsGrid = document.getElementById("learningAnalytics");
+    if (!panel || !analyticsGrid) return;
+
+    const analytics = loadAnalyticsState();
+    const topLessons = Object.entries(analytics.lessonViews)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3)
+        .map(([courseId, count]) => {
+            const course = courses.find(item => item.id === courseId);
+            return `${course ? course.title : courseId} (${count})`;
+        });
+
+    const topFeatures = Object.entries(analytics.featureUsage)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 4);
+
+    panel.innerHTML = `
+        <div class="analytics-card">
+            <span>Visitors</span>
+            <strong>${analytics.totalVisitors}</strong>
+        </div>
+        <div class="analytics-card">
+            <span>Returning users</span>
+            <strong>${analytics.returningUsers}</strong>
+        </div>
+        <div class="analytics-card">
+            <span>Quiz completions</span>
+            <strong>${analytics.totalQuizCompletions}</strong>
+        </div>
+        <div class="analytics-card">
+            <span>Top feature</span>
+            <strong>${topFeatures.length ? topFeatures[0][0].replace(/_/g, ' ') : 'No data yet'}</strong>
+        </div>
+    `;
+
+    analyticsGrid.innerHTML = `
+        <div class="analytics-card">
+            <span>Popular lessons</span>
+            <strong>${topLessons.length ? topLessons.join('<br>') : 'No lesson views yet'}</strong>
+        </div>
+        <div class="analytics-card">
+            <span>Device mix</span>
+            <strong>Desktop ${analytics.deviceTypes.desktop}<br>Mobile ${analytics.deviceTypes.mobile}<br>Tablet ${analytics.deviceTypes.tablet}</strong>
+        </div>
+        <div class="analytics-card">
+            <span>Quiz outcomes</span>
+            <strong>Passed ${analytics.quizResults.passed || 0}<br>Failed ${analytics.quizResults.failed || 0}</strong>
+        </div>
+        <div class="analytics-card">
+            <span>Most-used features</span>
+            <strong>${topFeatures.length ? topFeatures.map(([name, count]) => `${name.replace(/_/g, ' ')} (${count})`).join('<br>') : 'No data yet'}</strong>
+        </div>
+    `;
+}
+
 const quizQuestions = [
 
     {
@@ -859,6 +1006,9 @@ function openLesson(id) {
 
     if (!course) return;
 
+    trackFeatureUsage("lesson_opened");
+    trackLessonView(id);
+
     const section =
         document.getElementById("lessonSection");
 
@@ -1100,6 +1250,8 @@ function finishQuiz() {
     state.quizScore += percentage;
 
     state.quizAttempts++;
+    trackFeatureUsage("quiz_completed");
+    trackQuizCompletion(percentage, percentage >= 70);
 
     saveState();
 
@@ -1546,8 +1698,45 @@ document
         document
             .getElementById("navLinks")
             .classList.toggle("show");
+        trackFeatureUsage("mobile_menu");
 
     });
+
+const installBtn = document.getElementById("installBtn");
+let deferredPrompt = null;
+
+window.addEventListener("beforeinstallprompt", (event) => {
+    event.preventDefault();
+    deferredPrompt = event;
+    if (installBtn) {
+        installBtn.classList.remove("hidden");
+    }
+});
+
+if (installBtn) {
+    installBtn.addEventListener("click", async () => {
+        if (!deferredPrompt) return;
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        installBtn.classList.add("hidden");
+    });
+}
+
+const offlineBanner = document.getElementById("offlineBanner");
+function updateOfflineBanner() {
+    if (!offlineBanner) return;
+    offlineBanner.classList.toggle("hidden", navigator.onLine);
+}
+
+window.addEventListener("online", updateOfflineBanner);
+window.addEventListener("offline", updateOfflineBanner);
+updateOfflineBanner();
+
+window.addEventListener("appinstalled", () => {
+    if (installBtn) installBtn.classList.add("hidden");
+    trackFeatureUsage("app_installed");
+});
 
 const assistantInput = document.getElementById("assistantInput");
 const sendAssistantBtn = document.getElementById("sendAssistantBtn");
@@ -1626,6 +1815,9 @@ document
 /* =========================================
    INITIALISE APP
 ========================================= */
+
+trackVisit();
+updateAnalyticsPanel();
 
 displayCourses();
 
