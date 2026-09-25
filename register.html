@@ -35,7 +35,7 @@
                 <div class="field-wrap">
                     <span class="field-icon">🔒</span>
                     <input id="registerPassword" type="password" placeholder="Password" required />
-                    <span class="field-eye">◉</span>
+                    <button type="button" class="field-eye" data-toggle-password="registerPassword" aria-label="Show password">👁</button>
                 </div>
 
                 <button type="submit" class="auth-btn primary">Create Account</button>
@@ -52,6 +52,18 @@
         const registerName = document.getElementById('registerName');
         const registerEmail = document.getElementById('registerEmail');
         const registerPassword = document.getElementById('registerPassword');
+
+        document.querySelectorAll('[data-toggle-password]').forEach((toggle) => {
+            toggle.addEventListener('click', () => {
+                const input = document.getElementById(toggle.dataset.togglePassword);
+                if (!input) return;
+
+                const shouldShow = input.type === 'password';
+                input.type = shouldShow ? 'text' : 'password';
+                toggle.textContent = shouldShow ? '🙈' : '👁';
+                toggle.setAttribute('aria-label', shouldShow ? 'Hide password' : 'Show password');
+            });
+        });
 
         registerForm.addEventListener('submit', (event) => {
             event.preventDefault();

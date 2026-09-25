@@ -30,7 +30,7 @@
                 <div class="field-wrap">
                     <span class="field-icon">🔒</span>
                     <input id="loginPassword" type="password" placeholder="Password" required />
-                    <span class="field-eye">◉</span>
+                    <button type="button" class="field-eye" data-toggle-password="loginPassword" aria-label="Show password">👁</button>
                 </div>
 
                 <div class="auth-meta">
@@ -73,6 +73,18 @@
         const loginForm = document.getElementById('loginForm');
         const loginEmail = document.getElementById('loginEmail');
         const loginPassword = document.getElementById('loginPassword');
+
+        document.querySelectorAll('[data-toggle-password]').forEach((toggle) => {
+            toggle.addEventListener('click', () => {
+                const input = document.getElementById(toggle.dataset.togglePassword);
+                if (!input) return;
+
+                const shouldShow = input.type === 'password';
+                input.type = shouldShow ? 'text' : 'password';
+                toggle.textContent = shouldShow ? '🙈' : '👁';
+                toggle.setAttribute('aria-label', shouldShow ? 'Hide password' : 'Show password');
+            });
+        });
 
         const demoUsers = JSON.parse(localStorage.getItem('digitalAcademyUsers') || '[]');
 
