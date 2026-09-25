@@ -220,59 +220,6 @@ body.dark {
     color: white;
 }
 
-.auth-divider {
-    margin: 18px 0 12px;
-    text-align: center;
-    position: relative;
-    color: #7b8190;
-}
-
-.auth-divider::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    height: 1px;
-    background: rgba(107, 114, 128, 0.3);
-}
-
-.auth-divider span {
-    position: relative;
-    background: #f5efe9;
-    padding: 0 18px;
-    font-size: 0.9rem;
-}
-
-.social-row {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 12px;
-}
-
-.social-btn {
-    border: 1px solid rgba(124, 58, 237, 0.12);
-    background: rgba(255,255,255,0.8);
-    border-radius: 14px;
-    padding: 14px 0;
-    font-size: 1.7rem;
-    font-weight: 700;
-    cursor: pointer;
-    color: #111827;
-}
-
-.social-btn.google {
-    color: #ea4335;
-}
-
-.social-btn.apple {
-    color: #111827;
-}
-
-.social-btn.facebook {
-    color: #1877f2;
-}
-
 .auth-switch {
     text-align: center;
     margin-top: 18px;
