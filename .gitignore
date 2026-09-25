@@ -1,0 +1,18 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Local runtime artifacts
+node_modules/
+
+# Optional local environment files
+.env
+.env.*
