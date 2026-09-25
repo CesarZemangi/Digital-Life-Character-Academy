@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login | Digital Life Academy</title>
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
 </head>
 <body class="auth-body">
     <div class="auth-scene">
@@ -62,6 +64,9 @@
             localStorage.setItem('digitalAcademyUsers', JSON.stringify(savedUsers));
         }
 
+        const supabaseManager = window.DigitalAcademySupabase;
+        const supabaseClient = supabaseManager && supabaseManager.getSupabaseClient ? supabaseManager.getSupabaseClient() : null;
+
         const loginForm = document.getElementById('loginForm');
         const loginEmail = document.getElementById('loginEmail');
         const loginPassword = document.getElementById('loginPassword');
@@ -80,7 +85,7 @@
 
         const demoUsers = JSON.parse(localStorage.getItem('digitalAcademyUsers') || '[]');
 
-        loginForm.addEventListener('submit', (event) => {
+        loginForm.addEventListener('submit', async (event) => {
             event.preventDefault();
 
             const email = loginEmail.value.trim();
@@ -89,6 +94,29 @@
             if (!email || !password) {
                 alert('Please enter both email and password.');
                 return;
+            }
+
+            if (supabaseClient && !supabaseManager.isPlaceholder) {
+                try {
+                    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                    if (error) {
+                        throw error;
+                    }
+
+                    const sessionData = {
+                        email: data.user?.email || email,
+                        username: (data.user?.user_metadata?.username || data.user?.email || 'Learner').split('@')[0],
+                        role: data.user?.user_metadata?.role || 'user',
+                        provider: 'supabase'
+                    };
+
+                    localStorage.setItem('digitalAcademySession', JSON.stringify(sessionData));
+                    window.location.href = 'index.html';
+                    return;
+                } catch (error) {
+                    alert(error?.message || 'Unable to sign in with Supabase. Please check your credentials.');
+                    return;
+                }
             }
 
             const matchedUser = demoUsers.find((user) => {

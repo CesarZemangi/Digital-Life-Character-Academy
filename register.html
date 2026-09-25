@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Register | Digital Life Academy</title>
     <link rel="stylesheet" href="style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-config.js"></script>
 </head>
 <body class="auth-body">
     <div class="auth-scene">
@@ -48,6 +50,9 @@
     </div>
 
     <script>
+        const supabaseManager = window.DigitalAcademySupabase;
+        const supabaseClient = supabaseManager && supabaseManager.getSupabaseClient ? supabaseManager.getSupabaseClient() : null;
+
         const registerForm = document.getElementById('registerForm');
         const registerName = document.getElementById('registerName');
         const registerEmail = document.getElementById('registerEmail');
@@ -65,7 +70,7 @@
             });
         });
 
-        registerForm.addEventListener('submit', (event) => {
+        registerForm.addEventListener('submit', async (event) => {
             event.preventDefault();
 
             const name = registerName.value.trim();
@@ -75,6 +80,35 @@
             if (!name || !email || !password) {
                 alert('Please complete all fields.');
                 return;
+            }
+
+            if (supabaseClient && !supabaseManager.isPlaceholder) {
+                try {
+                    const { data, error } = await supabaseClient.auth.signUp({
+                        email,
+                        password,
+                        options: {
+                            data: {
+                                full_name: name,
+                                username: name.split(' ')[0],
+                                role: 'user'
+                            }
+                        }
+                    });
+
+                    if (error) {
+                        throw error;
+                    }
+
+                    if (data.user) {
+                        alert('Registration successful. Please check your email and then log in.');
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                } catch (error) {
+                    alert(error?.message || 'Unable to create account with Supabase.');
+                    return;
+                }
             }
 
             const existingUsers = JSON.parse(localStorage.getItem('digitalAcademyUsers') || '[]');
