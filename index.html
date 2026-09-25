@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Digital Life & Character Academy</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <nav class="navbar">
+        <div class="logo">
+            <img src="digital.png" alt="Digital Life Academy logo" />
+            <span>Digital Life Academy</span>
+        </div>
+
+        <button id="menuBtn" class="menu-btn">☰</button>
+
+        <div id="navLinks" class="nav-links">
+            <a href="#home">Home</a>
+            <a href="#learn">Learn</a>
+            <a href="#quiz">Quizzes</a>
+            <a href="#challenges">Challenges</a>
+            <a href="#progress">Progress</a>
+        </div>
+
+        <button id="themeBtn" class="theme-btn">🌙</button>
+    </nav>
+</header>
+
+
+<main>
+
+    <!-- HOME -->
+    <section id="home" class="hero">
+
+        <div class="hero-content">
+
+            <span class="badge">Digital Life & Character Academy</span>
+
+            <h1>
+                Learn. Grow. Create. Stay Safe.
+            </h1>
+
+            <p>
+                Build stronger character, healthier digital habits,
+                and the skills you need to live and create responsibly
+                in the digital world.
+            </p>
+
+            <div class="hero-buttons">
+                <a href="#learn" class="btn primary">
+                    Start Learning
+                </a>
+
+                <a href="#quiz" class="btn secondary">
+                    Take the Quiz
+                </a>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- DASHBOARD -->
+    <section id="progress" class="section">
+
+        <h2>Your Learning Dashboard</h2>
+
+        <div class="dashboard">
+
+            <div class="stat-card">
+                <h3 id="points">0</h3>
+                <p>Points</p>
+            </div>
+
+            <div class="stat-card">
+                <h3 id="completed">0</h3>
+                <p>Lessons Completed</p>
+            </div>
+
+            <div class="stat-card">
+                <h3 id="quizScore">0%</h3>
+                <p>Quiz Score</p>
+            </div>
+
+            <div class="stat-card">
+                <h3 id="streak">0</h3>
+                <p>Learning Streak</p>
+            </div>
+
+        </div>
+
+        <div class="welcome-panel">
+            <div>
+                <p class="eyebrow">Welcome back</p>
+                <h3 id="welcomeTitle">Welcome, Learner!</h3>
+                <p id="dashboardSummary">Your next step is to choose a lesson and start building your skills.</p>
+            </div>
+            <label class="name-field">
+                <span>Your name</span>
+                <input id="learnerName" type="text" maxlength="20" value="Learner" placeholder="Learner" />
+            </label>
+        </div>
+
+        <div class="dashboard-insights">
+            <div class="insight-card accent-blue">
+                <span class="insight-label">Next goal</span>
+                <strong id="nextGoalCard">Complete your first lesson</strong>
+            </div>
+            <div class="insight-card accent-purple">
+                <span class="insight-label">Recommended next step</span>
+                <strong id="recommendationCard">Try a lesson that matches your current progress.</strong>
+            </div>
+        </div>
+
+        <div class="timeline-card">
+            <div class="timeline-header">
+                <h3>Progress timeline</h3>
+                <span class="timeline-tag">Live update</span>
+            </div>
+            <div id="progressTimeline" class="progress-timeline"></div>
+        </div>
+
+        <div class="progress-container">
+
+            <div class="progress-header">
+                <span>Overall Progress</span>
+                <span id="progressText">0%</span>
+            </div>
+
+            <div class="progress-bar">
+                <div id="progressFill"></div>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- LEARNING -->
+    <section id="learn" class="section">
+
+        <h2>Learning Areas</h2>
+
+        <p class="section-intro">
+            Choose an area and start developing your knowledge and skills.
+        </p>
+
+        <div id="courseGrid" class="course-grid"></div>
+
+    </section>
+
+
+    <!-- LESSON -->
+    <section id="lessonSection" class="section hidden">
+
+        <button id="backBtn" class="btn secondary">
+            ← Back to Courses
+        </button>
+
+        <div id="lessonContent" class="lesson-box"></div>
+
+    </section>
+
+
+    <!-- QUIZ -->
+    <section id="quiz" class="section">
+
+        <h2>Knowledge Quiz</h2>
+
+        <div id="quizBox" class="quiz-box">
+
+            <p id="quizQuestion">
+                Loading question...
+            </p>
+
+            <div id="quizAnswers"></div>
+
+            <button id="nextQuestion" class="btn primary hidden">
+                Next Question
+            </button>
+
+            <div id="quizResult"></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- DAILY CHALLENGE -->
+    <section id="challenges" class="section">
+
+        <h2>Daily Challenge</h2>
+
+        <div class="challenge-card">
+
+            <div class="challenge-icon">
+                🎯
+            </div>
+
+            <h3>Today's Challenge</h3>
+
+            <p id="dailyChallenge">
+                Loading challenge...
+            </p>
+
+            <button id="completeChallenge" class="btn primary">
+                Complete Challenge
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- DAILY 5-MINUTE LEARNING -->
+    <section id="dailyLearning" class="section">
+        <h2>5-Minute Learning</h2>
+        <div id="dailyLearningCard" class="challenge-card"></div>
+    </section>
+
+    <!-- REAL-LIFE SCENARIO GAMES -->
+    <section id="scenarios" class="section">
+        <h2>Real-Life Scenario Game</h2>
+        <div id="scenarioCard" class="scenario-card"></div>
+    </section>
+
+    <!-- AI LEARNING ASSISTANT -->
+    <section id="aiAssistant" class="section">
+        <h2>AI Learning Assistant</h2>
+        <div class="assistant-card">
+            <div id="assistantChat" class="assistant-chat"></div>
+            <div class="assistant-quick-prompts">
+                <button class="mini-btn" data-prompt="How do I control my anger?">Control anger</button>
+                <button class="mini-btn" data-prompt="How do I know if an email is phishing?">Phishing check</button>
+                <button class="mini-btn" data-prompt="How do I create better content?">Create better content</button>
+            </div>
+            <div class="assistant-input-row">
+                <input id="assistantInput" type="text" placeholder="Ask your learning assistant..." />
+                <button id="sendAssistantBtn" class="btn primary">Ask</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- DIGITAL SAFETY SIMULATOR -->
+    <section id="safetySimulator" class="section">
+        <h2>Digital Safety Simulator</h2>
+        <div id="safetySimulatorCard" class="scenario-card"></div>
+    </section>
+
+    <!-- CREATOR STUDIO -->
+    <section id="creatorStudio" class="section">
+        <h2>Creator Studio</h2>
+        <div class="creator-studio">
+            <form id="creatorForm">
+                <label>
+                    Draft type
+                    <select id="draftType">
+                        <option value="Caption">Social media caption</option>
+                        <option value="Idea">Content idea</option>
+                        <option value="Script">Short script</option>
+                        <option value="Calendar">Content calendar</option>
+                    </select>
+                </label>
+                <label>
+                    Draft content
+                    <textarea id="draftContent" rows="5" placeholder="Write your draft here..."></textarea>
+                </label>
+                <button type="submit" class="btn primary">Save Draft</button>
+            </form>
+            <div id="creatorDrafts" class="creator-drafts"></div>
+        </div>
+    </section>
+
+    <!-- CERTIFICATES -->
+    <section id="certificates" class="section">
+        <h2>Certificates & Achievements</h2>
+        <div id="certificateList" class="certificate-list"></div>
+    </section>
+
+    <!-- BADGES -->
+    <section class="section">
+
+        <h2>Your Badges</h2>
+
+        <div id="badges" class="badges"></div>
+
+    </section>
+
+
+    <!-- RESET -->
+    <section class="section reset-section">
+
+        <button id="resetBtn" class="btn danger">
+            Reset My Progress
+        </button>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <h3>Digital Life & Character Academy</h3>
+
+    <p>
+        Learn how to live, create and communicate responsibly
+        in the digital world.
+    </p>
+
+    <p>
+        © 2026 Digital Life Academy
+    </p>
+
+</footer>
+
+<div id="quizModal" class="modal hidden" aria-live="polite">
+    <div class="modal-content">
+        <div id="quizModalBody"></div>
+    </div>
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
