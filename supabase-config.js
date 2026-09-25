@@ -1,7 +1,7 @@
 (function () {
     const defaultConfig = {
         url: "https://gnrwdizmmrtkbsxhjzlm.supabase.co",
-        anonKey: "YOUR_ANON_KEY"
+        anonKey: "sb_publishable_RpN9Vv4ZajvMDvRgjdhq9g_dyBO4ERl"
     };
 
     const runtimeConfig = window.__SUPABASE_CONFIG__ || defaultConfig;
